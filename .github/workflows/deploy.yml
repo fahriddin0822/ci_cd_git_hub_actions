@@ -9,10 +9,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Kodni yuklash
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: SSH kalitni sozlash
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Ensures compatibility with dependencies
+
+      - name: Configure SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
@@ -20,7 +25,7 @@ jobs:
           ssh-keyscan -H "${{ secrets.HOST }}" >> ~/.ssh/known_hosts
         shell: bash
 
-      - name: Serverga deploy qilish
+      - name: Deploy to Server
         env:
           HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.USERNAME }}
